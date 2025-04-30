@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
@@ -12,7 +13,6 @@ model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 app = Flask(__name__)
 
 def analyze_sentiment(text):
-    # Preprocess text (emoji removed)
     encoded_input = tokenizer(text, return_tensors='pt', truncation=True)
     with torch.no_grad():
         output = model(**encoded_input)
@@ -36,4 +36,6 @@ def index():
     return render_template("index.html", sentiment=sentiment)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Get the port number from the environment variable (Render will provide this)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
